@@ -23,13 +23,13 @@ jobs:
       - name: Install dependencies
         run: uv sync
 
-      - name: Check for missing migrations
-        run: uv run python manage.py migrate --check
+      - name: Run migrations
+        run: uv run python manage.py migrate
         env:
           DJANGO_SECRET_KEY: ci-secret-key-not-used-in-production
 
-      - name: Run migrations
-        run: uv run python manage.py migrate
+      - name: Check for missing migrations
+        run: uv run python manage.py migrate --check
         env:
           DJANGO_SECRET_KEY: ci-secret-key-not-used-in-production
 

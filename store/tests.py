@@ -219,6 +219,7 @@ def test_session_cart_update_quantity(session_cart, product):
     session_cart.update(product, quantity=5)
     assert session_cart.item_count == 5
 
+
 @pytest.mark.django_db
 def test_session_cart_update_zero_removes_item(session_cart, product):
     session_cart.add(product, quantity=3)
@@ -338,7 +339,9 @@ def test_product_list_excludes_inactive(client, two_products):
     cheap, _ = two_products
     cheap.is_active = False
     cheap.save()
-    assert "Cheap Widget" not in client.get(reverse("store:product_list")).content.decode()
+    assert (
+        "Cheap Widget" not in client.get(reverse("store:product_list")).content.decode()
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -348,24 +351,38 @@ def test_product_list_excludes_inactive(client, two_products):
 
 @pytest.mark.django_db
 def test_product_detail_returns_200(client, product):
-    assert client.get(reverse("store:product_detail", args=[product.slug])).status_code == 200
+    assert (
+        client.get(reverse("store:product_detail", args=[product.slug])).status_code
+        == 200
+    )
 
 
 @pytest.mark.django_db
 def test_product_detail_shows_name(client, product):
-    assert "Widget" in client.get(reverse("store:product_detail", args=[product.slug])).content.decode()
+    assert (
+        "Widget"
+        in client.get(
+            reverse("store:product_detail", args=[product.slug])
+        ).content.decode()
+    )
 
 
 @pytest.mark.django_db
 def test_product_detail_inactive_returns_404(client, product):
     product.is_active = False
     product.save()
-    assert client.get(reverse("store:product_detail", args=[product.slug])).status_code == 404
+    assert (
+        client.get(reverse("store:product_detail", args=[product.slug])).status_code
+        == 404
+    )
 
 
 @pytest.mark.django_db
 def test_product_detail_unknown_slug_returns_404(client, db):
-    assert client.get(reverse("store:product_detail", args=["no-such-slug"])).status_code == 404
+    assert (
+        client.get(reverse("store:product_detail", args=["no-such-slug"])).status_code
+        == 404
+    )
 
 
 # ---------------------------------------------------------------------------
