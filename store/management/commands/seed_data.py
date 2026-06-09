@@ -128,7 +128,7 @@ PRODUCTS = [
         "description": "PFAS-free ceramic coating, induction-compatible base, and a stay-cool silicone handle. Dishwasher safe.",
         "price": "44.99",
         "stock": 33,
-        "image": "https://images.unsplash.com/photo-1584990347449-a6eb0e9c5c5b?w=800&fit=crop",
+        "image": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=800&fit=crop",
         "is_featured": False,
     },
     # Sports & Outdoors
