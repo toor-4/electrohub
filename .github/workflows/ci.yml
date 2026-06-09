@@ -34,6 +34,6 @@ jobs:
           DJANGO_SECRET_KEY: ci-secret-key-not-used-in-production
 
       - name: Run tests
-        run: uv run python manage.py test --verbosity=2
+        run: uv run pytest -v
         env:
           DJANGO_SECRET_KEY: ci-secret-key-not-used-in-production
