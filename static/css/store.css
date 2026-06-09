@@ -49,15 +49,22 @@
 /* Sidebar filter card */
 .filter-card { border-radius: 10px; }
 
-/* ── Scroll-reveal ── */
+/* ── Scroll-reveal (bidirectional) ── */
 .scroll-reveal {
     opacity: 0;
     transform: translateY(30px);
-    transition: opacity 0.55s ease, transform 0.55s ease;
+    transition: opacity 0.5s ease, transform 0.5s ease;
 }
 .scroll-reveal[data-animation="fade-left"]  { transform: translateX(-32px); }
 .scroll-reveal[data-animation="fade-right"] { transform: translateX(32px); }
 .scroll-reveal[data-animation="fade-in"]    { transform: none; }
+
+/* Entering from top (scrolling up) — flip directions */
+.scroll-reveal.sr-from-top                               { transform: translateY(-30px); }
+.scroll-reveal.sr-from-top[data-animation="fade-left"]   { transform: translateX(32px); }
+.scroll-reveal.sr-from-top[data-animation="fade-right"]  { transform: translateX(-32px); }
+.scroll-reveal.sr-from-top[data-animation="fade-in"]     { transform: none; }
+
 .scroll-reveal.visible {
     opacity: 1;
     transform: none !important;

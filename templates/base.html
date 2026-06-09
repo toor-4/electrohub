@@ -85,11 +85,25 @@
 {% block extra_js %}{% endblock %}
 <script>
 (function () {
+  var lastScrollY = window.scrollY;
+  var scrollDir = 'down';
+
+  window.addEventListener('scroll', function () {
+    scrollDir = window.scrollY > lastScrollY ? 'down' : 'up';
+    lastScrollY = window.scrollY;
+  }, { passive: true });
+
   var observer = new IntersectionObserver(function (entries) {
     entries.forEach(function (entry) {
       if (entry.isIntersecting) {
+        entry.target.classList.toggle('sr-from-top', scrollDir === 'up');
         entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
+      } else {
+        // Element is below viewport → user scrolled back up: reset for re-entry
+        if (entry.boundingClientRect.top > 0) {
+          entry.target.classList.remove('visible', 'sr-from-top');
+        }
+        // Element is above viewport (scrolled past going down) → stay visible
       }
     });
   }, { threshold: 0.12 });
