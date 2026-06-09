@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}Order Confirmed — ElectroHub{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="text-center py-4 mb-4">
+    <div class="order-success-icon mb-3">
+      <i class="bi bi-check-circle-fill"></i>
+    </div>
+    <h2 class="fw-bold">Order Placed Successfully!</h2>
+    <p class="text-muted">Thank you for your purchase. Your order number is <strong>#{{ order.id }}</strong>.</p>
+  </div>
+
+  <div class="row g-4 justify-content-center">
+    <!-- Items -->
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+          <h5 class="fw-bold mb-3">Order Items</h5>
+          <table class="table table-bordered align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Product</th>
+                <th class="text-center">Price</th>
+                <th class="text-center">Qty</th>
+                <th class="text-center">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in order.items.all %}
+              <tr>
+                <td>{{ item.product_name }}</td>
+                <td class="text-center">${{ item.product_price }}</td>
+                <td class="text-center">{{ item.quantity }}</td>
+                <td class="text-center fw-bold">${{ item.subtotal }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot>
+              <tr class="table-warning">
+                <td colspan="3" class="text-end fw-bold">Total</td>
+                <td class="text-center fw-bold fs-5 text-primary">${{ order.total_price }}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shipping Address -->
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+          <h5 class="fw-bold mb-3"><i class="bi bi-geo-alt me-2"></i>Shipping To</h5>
+          <p class="mb-1 fw-semibold">{{ order.full_name }}</p>
+          <p class="mb-1 text-muted small">{{ order.email }}</p>
+          {% if order.phone %}<p class="mb-1 text-muted small">{{ order.phone }}</p>{% endif %}
+          <hr>
+          <p class="mb-1">{{ order.address_line1 }}</p>
+          {% if order.address_line2 %}<p class="mb-1">{{ order.address_line2 }}</p>{% endif %}
+          <p class="mb-1">{{ order.city }}, {{ order.postal_code }}</p>
+          <p class="mb-0">{{ order.country }}</p>
+          <hr>
+          <div class="d-flex justify-content-between">
+            <span class="text-muted">Status</span>
+            <span class="badge bg-warning text-dark text-capitalize">{{ order.status }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center">
+        <a href="{% url 'store:home' %}" class="btn btn-warning btn-lg fw-bold w-100">
+          <i class="bi bi-house me-2"></i>Continue Shopping
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

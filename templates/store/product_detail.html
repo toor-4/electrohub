@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}{{ product.name }} — ElectroHub{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'store:home' %}">Home</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'store:product_list' %}">Shop</a></li>
+      <li class="breadcrumb-item">
+        <a href="{% url 'store:product_list' %}?category={{ product.category.id }}">{{ product.category.name }}</a>
+      </li>
+      <li class="breadcrumb-item active">{{ product.name }}</li>
+    </ol>
+  </nav>
+
+  <!-- Product main -->
+  <div class="row g-5 mb-5">
+    <!-- Image -->
+    <div class="col-md-5">
+      {% if product.image %}
+        <img src="{{ product.image }}" class="img-fluid rounded-3 shadow" alt="{{ product.name }}">
+      {% else %}
+        <div class="img-placeholder-lg rounded-3 shadow"><i class="bi bi-cpu"></i></div>
+      {% endif %}
+    </div>
+
+    <!-- Details -->
+    <div class="col-md-7">
+      <span class="badge bg-secondary mb-2">{{ product.category.name }}</span>
+      {% if product.brand %}
+        <span class="badge bg-light text-dark border ms-1 mb-2">{{ product.brand }}</span>
+      {% endif %}
+      <h2 class="fw-bold mt-1">{{ product.name }}</h2>
+
+      <div class="price-display mb-3">${{ product.price }}</div>
+
+      {% if product.in_stock %}
+        <span class="badge bg-success mb-3"><i class="bi bi-check-circle me-1"></i>In Stock ({{ product.stock }} available)</span>
+      {% else %}
+        <span class="badge bg-danger mb-3"><i class="bi bi-x-circle me-1"></i>Out of Stock</span>
+      {% endif %}
+
+      <p class="text-muted">{{ product.description }}</p>
+
+      {% if product.in_stock %}
+      <form method="post" action="{% url 'store:cart_add' product.id %}" class="d-flex align-items-center gap-3 mt-4">
+        {% csrf_token %}
+        <div class="input-group" style="max-width:130px">
+          <span class="input-group-text">Qty</span>
+          <input type="number" name="quantity" class="form-control" value="1" min="1" max="{{ product.stock }}">
+        </div>
+        <button type="submit" class="btn btn-warning btn-lg fw-bold">
+          <i class="bi bi-cart-plus me-2"></i>Add to Cart
+        </button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Related Products -->
+  {% if related %}
+  <hr>
+  <h4 class="fw-bold mb-4">More from {{ product.category.name }}</h4>
+  <div class="row row-cols-2 row-cols-md-4 g-4 mb-4">
+    {% for p in related %}
+      {% include 'store/partials/product_card.html' with product=p %}
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

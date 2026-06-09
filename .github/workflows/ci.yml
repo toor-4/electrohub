@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Check for missing migrations
+        run: uv run python manage.py migrate --check
+        env:
+          DJANGO_SECRET_KEY: ci-secret-key-not-used-in-production
+
+      - name: Run migrations
+        run: uv run python manage.py migrate
+        env:
+          DJANGO_SECRET_KEY: ci-secret-key-not-used-in-production
+
+      - name: Run tests
+        run: uv run python manage.py test --verbosity=2
+        env:
+          DJANGO_SECRET_KEY: ci-secret-key-not-used-in-production
