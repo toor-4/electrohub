@@ -40,10 +40,43 @@ Open http://127.0.0.1:8000/ in your browser.
 ## Project Structure
 
 ```
-demoProject/   # Django settings, root URLconf
-store/         # Main app: models, views, cart, forms, URLs
-templates/     # Base layout + store-specific templates
-static/        # Global CSS
+├── demoProject/                  # Django project package
+│   ├── settings.py               # Configuration (DB, auth, static, context processors)
+│   ├── urls.py                   # Root URLconf (admin + auth + store)
+│   ├── wsgi.py / asgi.py
+│
+├── store/                        # Main application
+│   ├── models.py                 # Category, Product, Cart, CartItem, Order, OrderItem
+│   ├── views.py                  # home, product_list/detail, cart_*, checkout, order_confirm, register
+│   ├── cart.py                   # SessionCart — session-keyed DB cart wrapper
+│   ├── forms.py                  # UserRegistrationForm, CheckoutForm, ProductSearchForm
+│   ├── urls.py                   # All store: routes
+│   ├── admin.py                  # Admin registrations with inlines
+│   ├── context_processors.py     # cart_summary — injects cart_item_count/cart_total globally
+│   ├── tests.py                  # pytest suite (47 tests)
+│   └── management/commands/
+│       └── seed_data.py          # Populates sample categories and products
+│
+├── templates/
+│   ├── base.html                 # Global layout: nav, messages, footer
+│   ├── registration/
+│   │   └── login.html
+│   └── store/
+│       ├── home.html             # Hero, category pills, featured products, CTA
+│       ├── product_list.html     # Filter sidebar + paginated product grid
+│       ├── product_detail.html   # Product info, add-to-cart, related products
+│       ├── cart.html             # Line-item table, order summary
+│       ├── checkout.html         # Shipping form + order summary
+│       ├── order_confirm.html    # Post-order confirmation
+│       ├── register.html
+│       └── partials/
+│           ├── product_card.html
+│           ├── pagination.html
+│           └── messages.html
+│
+├── static/css/store.css          # Volt Dark design system (CSS custom properties + Bootstrap overrides)
+├── tests/e2e/                    # Playwright end-to-end tests
+└── COMPONENTS.md                 # Component reference with field-level detail
 ```
 
 ## Testing

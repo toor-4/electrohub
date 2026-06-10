@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="html-root">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="{% static 'css/store.css' %}">
   {% block extra_css %}{% endblock %}
+  <script>(function(){if(localStorage.getItem('theme')==='light')document.documentElement.setAttribute('data-theme','light');})();</script>
 </head>
 <body>
 
@@ -45,6 +46,13 @@
             </span>
             {% endif %}
           </a>
+        </li>
+        <li class="nav-item d-flex align-items-center ms-1">
+          <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme" type="button">
+            <span class="icon-dark"><i class="bi bi-moon-stars-fill"></i></span>
+            <span class="icon-light"><i class="bi bi-sun-fill"></i></span>
+            <span class="theme-toggle-track"></span>
+          </button>
         </li>
         {% if user.is_authenticated %}
         <li class="nav-item dropdown">
@@ -89,6 +97,23 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 {% block extra_js %}{% endblock %}
+<script>
+(function () {
+  var root = document.documentElement;
+  var btn = document.getElementById('theme-toggle');
+  if (!btn) return;
+  btn.addEventListener('click', function () {
+    var isLight = root.getAttribute('data-theme') === 'light';
+    if (isLight) {
+      root.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      root.setAttribute('data-theme', 'light');
+      localStorage.setItem('theme', 'light');
+    }
+  });
+})();
+</script>
 <script>
 (function () {
   var lastScrollY = window.scrollY;
