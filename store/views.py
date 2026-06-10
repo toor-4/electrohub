@@ -170,7 +170,7 @@ def checkout(request):
                 item.product.save()
 
             cart.clear()
-            return redirect("store:order_confirm", order_id=order.id)
+            return redirect("store:stripe_payment_demo", order_id=order.id)
     else:
         form = CheckoutForm(initial=initial)
 
@@ -195,3 +195,8 @@ def register(request):
     else:
         form = UserRegistrationForm()
     return render(request, "store/register.html", {"form": form})
+
+
+def stripe_payment_demo(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    return render(request, "store/stripe_payment.html", {"order": order})

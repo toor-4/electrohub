@@ -1,0 +1,645 @@
+{% extends 'base.html' %}
+{% block title %}Payment — ElectroHub{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── Stripe Payment Page ── */
+  .payment-page {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  .payment-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .payment-section-title {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    margin-bottom: 1.25rem;
+  }
+
+  /* ── Saved card radio tiles ── */
+  .card-tile {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: border-color var(--ease), background var(--ease);
+    margin-bottom: 0.6rem;
+  }
+
+  .card-tile:has(input:checked),
+  .card-tile.selected {
+    border-color: var(--volt);
+    background: var(--volt-dim);
+  }
+
+  .card-tile input[type="radio"] {
+    accent-color: var(--volt);
+    width: 1.1rem;
+    height: 1.1rem;
+    cursor: pointer;
+  }
+
+  .card-tile-icon {
+    width: 42px;
+    height: 28px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    background: var(--elevated);
+    flex-shrink: 0;
+  }
+
+  .card-tile-info {
+    flex: 1;
+  }
+
+  .card-tile-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  .card-tile-meta {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--text-2);
+  }
+
+  .card-tile-badge {
+    font-size: 0.68rem;
+    font-family: var(--font-mono);
+    padding: 2px 7px;
+    border-radius: 20px;
+    background: var(--volt-dim);
+    color: var(--volt);
+    border: 1px solid var(--volt-border);
+    white-space: nowrap;
+  }
+
+  /* ── New card collapse area ── */
+  .new-card-panel {
+    background: var(--elevated);
+    border: 1px solid var(--border-2);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-top: 0.5rem;
+  }
+
+  /* ── Stripe Elements mock ── */
+  .stripe-field {
+    background: var(--bg);
+    border: 1px solid var(--border-2);
+    border-radius: var(--radius);
+    padding: 0.65rem 0.85rem;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    width: 100%;
+    outline: none;
+    transition: border-color var(--ease);
+  }
+
+  .stripe-field:focus {
+    border-color: var(--volt);
+    box-shadow: 0 0 0 3px rgba(212, 255, 0, 0.08);
+  }
+
+  .stripe-field::placeholder {
+    color: var(--text-3);
+  }
+
+  .stripe-label {
+    font-size: 0.78rem;
+    color: var(--text-2);
+    font-weight: 500;
+    margin-bottom: 5px;
+    display: block;
+  }
+
+  /* ── Card brand icons strip ── */
+  .brand-strip {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .brand-icon {
+    height: 22px;
+    padding: 2px 6px;
+    background: var(--elevated);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--text-2);
+  }
+
+  /* ── Secure badge ── */
+  .secure-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.72rem;
+    color: var(--text-3);
+    font-family: var(--font-mono);
+  }
+
+  .secure-badge i {
+    color: var(--green);
+  }
+
+  /* ── Order summary panel ── */
+  .order-summary {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    position: sticky;
+    top: 80px;
+  }
+
+  .order-summary-title {
+    font-family: var(--font-display);
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    margin-bottom: 1.1rem;
+  }
+
+  .order-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.85rem;
+    gap: 0.5rem;
+  }
+
+  .order-line-product {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .order-line-qty {
+    font-size: 0.76rem;
+    color: var(--text-3);
+    font-family: var(--font-mono);
+  }
+
+  .order-line-price {
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .order-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.75rem;
+    margin-top: 0.25rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .order-total-label {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .order-total-amount {
+    font-family: var(--font-mono);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--volt);
+  }
+
+  /* ── Pay button ── */
+  .btn-pay {
+    background: var(--volt);
+    color: #000;
+    border: none;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+    border-radius: var(--radius);
+    padding: 0.8rem;
+    width: 100%;
+    cursor: pointer;
+    transition: opacity var(--ease), transform var(--ease);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .btn-pay:hover {
+    opacity: 0.88;
+    transform: translateY(-1px);
+  }
+
+  .btn-pay:active {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  /* ── Stripe wordmark ── */
+  .stripe-wordmark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-top: 0.85rem;
+    font-size: 0.72rem;
+    color: var(--text-3);
+    font-family: var(--font-mono);
+  }
+
+  .stripe-wordmark span {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: #635bff;
+    letter-spacing: 0.02em;
+  }
+
+  /* ── Country select ── */
+  .stripe-select {
+    background: var(--bg);
+    border: 1px solid var(--border-2);
+    border-radius: var(--radius);
+    padding: 0.65rem 0.85rem;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    width: 100%;
+    outline: none;
+    transition: border-color var(--ease);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23555' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.85rem center;
+  }
+
+  .stripe-select:focus {
+    border-color: var(--volt);
+  }
+
+  /* ── Page steps ── */
+  .checkout-steps {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 2rem;
+    font-size: 0.8rem;
+    font-family: var(--font-mono);
+    color: var(--text-3);
+  }
+
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .step.done .step-num {
+    background: var(--green);
+    color: #000;
+  }
+
+  .step.active .step-num {
+    background: var(--volt);
+    color: #000;
+  }
+
+  .step-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.7rem;
+    background: var(--border-2);
+    color: var(--text-3);
+  }
+
+  .step-sep {
+    width: 28px;
+    height: 1px;
+    background: var(--border);
+    margin: 0 0.3rem;
+  }
+
+  /* ── Lock icon in field ── */
+  .field-wrap {
+    position: relative;
+  }
+
+  .field-wrap .field-icon {
+    position: absolute;
+    right: 0.7rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-3);
+    font-size: 0.85rem;
+    pointer-events: none;
+  }
+
+  .field-wrap .stripe-field {
+    padding-right: 2.2rem;
+  }
+
+  /* Loading spinner on pay */
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .spinner {
+    display: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(0, 0, 0, 0.3);
+    border-top-color: #000;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  .btn-pay.loading .spinner {
+    display: inline-block;
+  }
+
+  .btn-pay.loading .btn-pay-text {
+    opacity: 0.6;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container payment-page">
+
+  <!-- Breadcrumb steps -->
+  <div class="checkout-steps">
+    <div class="step done">
+      <div class="step-num"><i class="bi bi-check"></i></div>
+      <span>Cart</span>
+    </div>
+    <div class="step-sep"></div>
+    <div class="step done">
+      <div class="step-num"><i class="bi bi-check"></i></div>
+      <span>Shipping</span>
+    </div>
+    <div class="step-sep"></div>
+    <div class="step active">
+      <div class="step-num">3</div>
+      <span style="color:var(--text)">Payment</span>
+    </div>
+  </div>
+
+  <div class="row g-4">
+
+    <!-- ── Left: Payment Form ── -->
+    <div class="col-lg-7">
+
+      <!-- Billing Address -->
+      <div class="payment-section">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <p class="payment-section-title mb-0">Billing Address</p>
+        </div>
+
+        <div class="mb-3">
+          <label class="stripe-label">Country</label>
+          <select class="stripe-select">
+            <option value="PH" selected>🇵🇭 Philippines</option>
+            <option value="US">🇺🇸 United States</option>
+            <option value="GB">🇬🇧 United Kingdom</option>
+            <option value="AU">🇦🇺 Australia</option>
+            <option value="CA">🇨🇦 Canada</option>
+            <option value="SG">🇸🇬 Singapore</option>
+          </select>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="stripe-label">Address line 1</label>
+            <input class="stripe-field" type="text" placeholder="123 Main Street" value="123 Main Street">
+          </div>
+          <div class="col-12">
+            <label class="stripe-label">Address line 2 <span style="color:var(--text-3)">(optional)</span></label>
+            <input class="stripe-field" type="text" placeholder="Apartment, suite, unit…">
+          </div>
+          <div class="col-md-5">
+            <label class="stripe-label">City</label>
+            <input class="stripe-field" type="text" placeholder="Manila" value="Manila">
+          </div>
+          <div class="col-md-4">
+            <label class="stripe-label">Province</label>
+            <input class="stripe-field" type="text" placeholder="Metro Manila" value="Metro Manila">
+          </div>
+          <div class="col-md-3">
+            <label class="stripe-label">Postal code</label>
+            <input class="stripe-field" type="text" placeholder="1000" value="1000">
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Method -->
+      <div class="payment-section">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <p class="payment-section-title mb-0">Payment Method</p>
+          <div class="secure-badge">
+            <i class="bi bi-lock-fill"></i> Secure and encrypted
+          </div>
+        </div>
+
+        <!-- Saved card -->
+        <label class="card-tile">
+          <input type="radio" name="payment_method" value="saved" checked>
+          <div class="card-tile-icon">💳</div>
+          <div class="card-tile-info">
+            <div class="card-tile-name">MasterCard •••• 1234</div>
+            <div class="card-tile-meta">Juan Rodriguez &nbsp;·&nbsp; Expires 8/2040</div>
+          </div>
+          <span class="card-tile-badge">Saved</span>
+        </label>
+
+        <!-- New card option -->
+        <label class="card-tile" id="new-card-tile">
+          <input type="radio" name="payment_method" value="new" id="new-card-radio">
+          <div class="card-tile-icon"><i class="bi bi-plus-lg" style="color:var(--text-2);font-size:1rem"></i></div>
+          <div class="card-tile-info">
+            <div class="card-tile-name">Add new card</div>
+            <div class="card-tile-meta">Visa, Mastercard, Amex, JCB…</div>
+          </div>
+          <div class="brand-strip">
+            <div class="brand-icon">VISA</div>
+            <div class="brand-icon">MC</div>
+            <div class="brand-icon">AMEX</div>
+            <div class="brand-icon">JCB</div>
+          </div>
+        </label>
+
+        <!-- New card input panel (shown when "Add new card" selected) -->
+        <div class="new-card-panel" id="new-card-panel" style="display:none">
+          <div class="mb-3">
+            <label class="stripe-label">Name on card</label>
+            <input class="stripe-field" type="text" placeholder="Full name as on card">
+          </div>
+          <div class="mb-3">
+            <label class="stripe-label">Card number</label>
+            <div class="field-wrap">
+              <input class="stripe-field" type="text" placeholder="1234 5678 9012 3456" maxlength="19"
+                id="card-number-input">
+              <span class="field-icon" id="card-brand-icon"><i class="bi bi-credit-card"></i></span>
+            </div>
+          </div>
+          <div class="row g-3">
+            <div class="col-6">
+              <label class="stripe-label">Expiry date</label>
+              <input class="stripe-field" type="text" placeholder="MM / YY" maxlength="7">
+            </div>
+            <div class="col-6">
+              <label class="stripe-label">CVC</label>
+              <div class="field-wrap">
+                <input class="stripe-field" type="text" placeholder="•••" maxlength="4">
+                <span class="field-icon"><i class="bi bi-question-circle"></i></span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div class="form-check" style="margin-left:0">
+              <input class="form-check-input" type="checkbox" id="save-card" checked style="accent-color:var(--volt)">
+              <label class="form-check-label" for="save-card" style="font-size:0.82rem;color:var(--text-2)">
+                Save this card for future purchases
+              </label>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ── Right: Order Summary ── -->
+    <div class="col-lg-5">
+      <div class="order-summary">
+        <p class="order-summary-title">Order Summary</p>
+
+        {% for item in order.items.all %}
+        <div class="order-line">
+          <div>
+            <div class="order-line-product">{{ item.product_name }}</div>
+            <div class="order-line-qty">× {{ item.quantity }}</div>
+          </div>
+          <span class="order-line-price">${{ item.subtotal }}</span>
+        </div>
+        {% endfor %}
+
+        <hr style="margin: 0.6rem 0">
+
+        <div class="order-line" style="margin-bottom:0.3rem">
+          <span style="font-size:0.85rem;color:var(--text-2)">Shipping</span>
+          <span class="order-line-price" style="color:var(--green);font-size:0.85rem">Free</span>
+        </div>
+
+        <div class="order-total-row">
+          <span class="order-total-label">Total</span>
+          <span class="order-total-amount">${{ order.total_price }}</span>
+        </div>
+
+        <button class="btn-pay mt-4" id="pay-btn" type="button" data-confirm-url="{% url 'store:order_confirm' order.id %}">
+          <div class="spinner"></div>
+          <span class="btn-pay-text"><i class="bi bi-lock-fill me-1"></i> Pay ${{ order.total_price }}</span>
+        </button>
+
+        <!-- Stripe wordmark -->
+        <div class="stripe-wordmark">
+          Powered by <span>stripe</span>
+        </div>
+
+        <!-- Security notes -->
+        <div class="mt-3 pt-3 border-top" style="border-color:var(--border)!important">
+          <div class="d-flex flex-column gap-1">
+            <div class="secure-badge"><i class="bi bi-shield-check-fill"></i> 256-bit SSL encryption</div>
+            <div class="secure-badge"><i class="bi bi-patch-check-fill"></i> PCI DSS compliant</div>
+            <div class="secure-badge"><i class="bi bi-arrow-counterclockwise"></i> 30-day easy returns</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Toggle new card panel
+  const newCardRadio = document.getElementById('new-card-radio');
+  const newCardPanel = document.getElementById('new-card-panel');
+  const allRadios = document.querySelectorAll('input[name="payment_method"]');
+
+  allRadios.forEach(r => {
+    r.addEventListener('change', () => {
+      newCardPanel.style.display = newCardRadio.checked ? 'block' : 'none';
+    });
+  });
+
+  // Card number formatting
+  const cardInput = document.getElementById('card-number-input');
+  const cardBrandIcon = document.getElementById('card-brand-icon');
+  if (cardInput) {
+    cardInput.addEventListener('input', function () {
+      let v = this.value.replace(/\D/g, '').substring(0, 16);
+      this.value = v.replace(/(.{4})/g, '$1 ').trim();
+
+      const brand = v.startsWith('4') ? 'bi-credit-card-2-front-fill' :
+        v.startsWith('5') ? 'bi-credit-card-fill' :
+          v.startsWith('3') ? 'bi-credit-card-2-back-fill' : 'bi-credit-card';
+      cardBrandIcon.innerHTML = `<i class="bi ${brand}"></i>`;
+    });
+  }
+
+  // Pay button loading animation then redirect to order confirmation
+  const payBtn = document.getElementById('pay-btn');
+  payBtn.addEventListener('click', function () {
+    this.classList.add('loading');
+    this.querySelector('.btn-pay-text').textContent = ' Processing…';
+    const confirmUrl = this.dataset.confirmUrl;
+    setTimeout(() => {
+      this.classList.remove('loading');
+      this.style.background = 'var(--green)';
+      this.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i> Payment Successful!';
+      this.disabled = true;
+      setTimeout(() => { window.location.href = confirmUrl; }, 800);
+    }, 2200);
+  });
+</script>
+{% endblock %}

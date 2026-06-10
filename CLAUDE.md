@@ -129,3 +129,23 @@ Example:
 ```
 feat: Add base template, signup flow, and product search UI
 ```
+
+## Roadmap
+
+Planned features to integrate, in rough priority order:
+
+### High priority (fills core gaps)
+- **Stripe payment gateway** — orders are placed without real payment; integrate `stripe` for card processing at checkout
+- **Order confirmation emails** — send transactional email after checkout using Django's email backend
+- **User profile & order history** — `/account/orders/` page for logged-in users to view past orders
+
+### Medium priority
+- **Product reviews & ratings** — `Review` model linked to `Product` and `User`
+- **Coupon / discount codes** — `Coupon` model with code, discount type (flat/percent), and expiry; applied at checkout
+- **Wishlist** — `Wishlist` model linking users to products
+- **Social auth (django-allauth)** — Google/GitHub login to reduce signup friction
+
+### Infrastructure
+- **Celery + Redis** — async task queue for emails and background order processing
+- **django-storages + S3** — replace URL-based product images with real file uploads
+- **Django REST Framework (DRF)** — expose store as an API for a future mobile app or React frontend
