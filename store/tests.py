@@ -460,7 +460,7 @@ def test_checkout_post_redirects_to_confirm(client, product):
     r = client.post(reverse("store:checkout"), CHECKOUT_POST)
     order = Order.objects.first()
     assert r.status_code == 302
-    assert r["Location"] == reverse("store:order_confirm", args=[order.id])
+    assert r["Location"] == reverse("store:stripe_payment_demo", args=[order.id])
 
 
 @pytest.mark.django_db
