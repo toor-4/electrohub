@@ -3,41 +3,44 @@
 
 {% block content %}
 <div class="container">
-  <div class="row justify-content-center">
+  <div class="row justify-content-center" style="min-height:60vh;align-items:center">
     <div class="col-md-5 col-lg-4">
+      <div class="text-center mb-4">
+        <span style="font-size:2rem;color:var(--volt)"><i class="bi bi-lightning-charge-fill"></i></span>
+        <h3 class="fw-bold mt-2 mb-0">Sign In</h3>
+        <p style="color:var(--text-3);font-size:0.85rem;margin-top:0.35rem;font-family:var(--font-mono)">Welcome back to ElectroHub</p>
+      </div>
+
       <div class="card border-0 shadow-sm">
         <div class="card-body p-4">
-          <h3 class="fw-bold text-center mb-1">Sign In</h3>
-          <p class="text-muted text-center mb-4">Welcome back to ElectroHub</p>
-
           <form method="post">
             {% csrf_token %}
             {% if form.errors %}
-            <div class="alert alert-danger small">
+            <div class="alert alert-danger small mb-3">
               Invalid username or password. Please try again.
             </div>
             {% endif %}
             <div class="mb-3">
-              <label class="form-label fw-semibold" for="id_username">Username</label>
+              <label class="form-label" for="id_username">Username</label>
               <input type="text" name="username" id="id_username" class="form-control"
                      autofocus autocomplete="username" required>
             </div>
-            <div class="mb-3">
-              <label class="form-label fw-semibold" for="id_password">Password</label>
+            <div class="mb-4">
+              <label class="form-label" for="id_password">Password</label>
               <input type="password" name="password" id="id_password" class="form-control"
                      autocomplete="current-password" required>
             </div>
             <input type="hidden" name="next" value="{{ next }}">
-            <button type="submit" class="btn btn-warning w-100 fw-bold btn-lg">
-              <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+            <button type="submit" class="btn btn-warning w-100 btn-lg">
+              Sign In <i class="bi bi-arrow-right ms-1"></i>
             </button>
           </form>
-
-          <p class="text-center mt-4 mb-0 text-muted">
-            Don't have an account? <a href="{% url 'store:register' %}" class="text-decoration-none">Create one</a>
-          </p>
         </div>
       </div>
+
+      <p class="text-center mt-3 mb-0" style="font-size:0.85rem;color:var(--text-3)">
+        No account? <a href="{% url 'store:register' %}" style="color:var(--volt)">Create one</a>
+      </p>
     </div>
   </div>
 </div>
