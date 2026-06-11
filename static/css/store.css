@@ -70,6 +70,31 @@ hr { border-color: var(--border) !important; opacity: 1 !important; }
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text) !important;
+  position: relative;
+  padding: 4px 0;
+}
+.navbar-brand::before,
+.navbar-brand::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  background: var(--volt);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+.navbar-brand::before {
+  top: 0;
+  transform-origin: left center;
+}
+.navbar-brand::after {
+  bottom: 0;
+  transform-origin: right center;
+}
+.navbar-brand:hover::before,
+.navbar-brand:hover::after {
+  transform: scaleX(1);
 }
 .navbar-brand .volt-icon { color: var(--volt); }
 .nav-link {
@@ -555,6 +580,26 @@ footer.bg-dark {
   to   { opacity: 1; transform: translateY(0); }
 }
 .hero-section { animation: heroEntrance 0.75s ease-out both; }
+
+@keyframes wordFromTop {
+  from { opacity: 0; transform: translateY(-80px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes wordFromLeft {
+  from { opacity: 0; transform: translateX(-120px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes wordFromRight {
+  from { opacity: 0; transform: translateX(120px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.hero-word {
+  display: inline-block;
+  opacity: 0;
+}
+.hero-word--top   { animation: wordFromTop   0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards; }
+.hero-word--left  { animation: wordFromLeft  0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.32s forwards; }
+.hero-word--right { animation: wordFromRight 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.49s forwards; }
 
 /* ══════════════════════════════════════════════
    LIGHT THEME

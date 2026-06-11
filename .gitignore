@@ -17,3 +17,6 @@ media/
 # Environment variables
 .env
 .env.*
+
+# Claude Code
+.claude/
