@@ -4,23 +4,33 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-This project uses [uv](https://github.com/astral-sh/uv) for dependency management and Python 3.12+.
+This project uses `pip` for dependency management and Python 3.10+.
 
 ```bash
+# Create and activate a virtual environment
+python3.10 -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Install dev dependencies (testing, linting)
+pip install -r requirements-dev.txt
+
 # Run the development server
-uv run python manage.py runserver
+python manage.py runserver
 
 # Apply migrations
-uv run python manage.py migrate
+python manage.py migrate
 
 # Create a new migration after model changes
-uv run python manage.py makemigrations
+python manage.py makemigrations
 
 # Open the Django shell
-uv run python manage.py shell
+python manage.py shell
 
 # Create a superuser for the admin panel
-uv run python manage.py createsuperuser
+python manage.py createsuperuser
 ```
 
 ## Testing
@@ -29,25 +39,25 @@ uv run python manage.py createsuperuser
 
 ```bash
 # Run all tests
-uv run pytest
+pytest
 
 # Run all tests verbose
-uv run pytest -v
+pytest -v
 
 # Run a single test file
-uv run pytest store/tests.py
+pytest store/tests.py
 
 # Run a single test by name
-uv run pytest store/tests.py::test_checkout_post_creates_order
+pytest store/tests.py::test_checkout_post_creates_order
 
 # Run tests matching a keyword
-uv run pytest -k "cart"
+pytest -k "cart"
 
 # Stop on first failure
-uv run pytest -x
+pytest -x
 
 # Run with coverage report
-uv run pytest --cov=store --cov-report=term-missing
+pytest --cov=store --cov-report=term-missing
 ```
 
 Test files follow the `tests.py` / `test_*.py` naming convention (configured in `pyproject.toml`). Django settings are auto-loaded via `DJANGO_SETTINGS_MODULE = "demoProject.settings"` — no extra setup needed.
@@ -56,18 +66,18 @@ Test files follow the `tests.py` / `test_*.py` naming convention (configured in 
 
 ```bash
 # Install browser binaries (one-time, or after updating playwright)
-uv run playwright install chromium
+playwright install chromium
 
 # Install all supported browsers
-uv run playwright install
+playwright install
 
 # Run a Playwright script
-uv run python tests/e2e/test_home.py
+python tests/e2e/test_home.py
 
 # Run Playwright tests via pytest-playwright (if installed)
-uv run pytest tests/e2e/ --headed          # show the browser window
-uv run pytest tests/e2e/ --slowmo=500      # slow down interactions (ms)
-uv run pytest tests/e2e/ --screenshot=on   # save screenshots on failure
+pytest tests/e2e/ --headed          # show the browser window
+pytest tests/e2e/ --slowmo=500      # slow down interactions (ms)
+pytest tests/e2e/ --screenshot=on   # save screenshots on failure
 ```
 
 Playwright test files live in `tests/e2e/`. Use the sync API (`from playwright.sync_api import sync_playwright`) for scripts and the async API with `pytest-playwright` for pytest-based e2e tests.
@@ -86,11 +96,11 @@ with sync_playwright() as p:
     browser.close()
 ```
 
-> The dev server must be running before executing Playwright tests (`uv run python manage.py runserver`).
+> The dev server must be running before executing Playwright tests (`python manage.py runserver`).
 
 ## Architecture
 
-This is a Django 6 e-commerce app with a single `store` app and a `demoProject` settings package.
+This is a Django 5.2 e-commerce app with a single `store` app and a `demoProject` settings package.
 
 ### Cart design
 
