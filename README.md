@@ -1,29 +1,32 @@
 # Django E-Commerce Store
 
-A Django 6 e-commerce application with product browsing, a session-backed cart, and order checkout.
+A Django 5.2 e-commerce application with product browsing, a session-backed cart, and order checkout.
 
 ## Requirements
 
-- Python 3.12+
-- [uv](https://github.com/astral-sh/uv)
+- Python 3.10+
 
 ## Setup
 
 ```bash
+# Create and activate a virtual environment
+python3.10 -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
 # Install dependencies
-uv sync
+pip install -r requirements.txt
 
 # Apply database migrations
-uv run python manage.py migrate
+python manage.py migrate
 
 # (Optional) Seed sample data
-uv run python manage.py seed_data
+python manage.py seed_data
 
 # Create an admin superuser
-uv run python manage.py createsuperuser
+python manage.py createsuperuser
 
 # Start the development server
-uv run python manage.py runserver
+python manage.py runserver
 ```
 
 Open http://127.0.0.1:8000/ in your browser.
@@ -75,6 +78,8 @@ Open http://127.0.0.1:8000/ in your browser.
 │           └── messages.html
 │
 ├── static/css/store.css          # Volt Dark design system (CSS custom properties + Bootstrap overrides)
+├── requirements.txt              # Pinned production dependencies
+├── requirements-dev.txt          # Pinned dev dependencies (pytest, ruff)
 ├── tests/e2e/                    # Playwright end-to-end tests
 └── COMPONENTS.md                 # Component reference with field-level detail
 ```
@@ -82,11 +87,14 @@ Open http://127.0.0.1:8000/ in your browser.
 ## Testing
 
 ```bash
+# Install dev dependencies
+pip install -r requirements-dev.txt
+
 # Run all tests
-uv run pytest
+pytest
 
 # Run verbose
-uv run pytest -v
+pytest -v
 ```
 
 ## Deploying to PythonAnywhere
@@ -109,10 +117,9 @@ cd <your-repo>
 ### 4. Create a virtual environment and install dependencies
 
 ```bash
-python3.12 -m venv .venv
-source .venv/bin/activate
-pip install uv
-uv sync --no-dev
+python3.10 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 ```
 
 ### 5. Set environment variables
@@ -130,18 +137,18 @@ export DJANGO_ALLOWED_HOSTS='<your-username>.pythonanywhere.com'
 ### 6. Apply migrations and collect static files
 
 ```bash
-uv run python manage.py migrate
-uv run python manage.py collectstatic --noinput
+python manage.py migrate
+python manage.py collectstatic --noinput
 
 # Optional: seed sample data
-uv run python manage.py seed_data
+python manage.py seed_data
 ```
 
 ### 7. Configure the web app
 
 1. Go to **Web** tab → **Add a new web app**
-2. Choose **Manual configuration** → **Python 3.12**
-3. Set the **Virtualenv** path to `/home/<your-username>/<your-repo>/.venv`
+2. Choose **Manual configuration** → **Python 3.10**
+3. Set the **Virtualenv** path to `/home/<your-username>/<your-repo>/venv`
 
 ### 8. Edit the WSGI file
 
@@ -185,10 +192,10 @@ https://<your-username>.pythonanywhere.com
 ```bash
 cd ~/<your-repo>
 git pull
-source .venv/bin/activate
-uv sync --no-dev
-uv run python manage.py migrate
-uv run python manage.py collectstatic --noinput
+source venv/bin/activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py collectstatic --noinput
 ```
 
 Then click **Reload** in the Web tab.
