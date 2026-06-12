@@ -18,5 +18,9 @@ media/
 .env
 .env.*
 
+# uv
+uv.lock
+
 # Claude Code
 .claude/
+
