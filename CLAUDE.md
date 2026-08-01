@@ -60,7 +60,7 @@ pytest -x
 pytest --cov=store --cov-report=term-missing
 ```
 
-Test files follow the `tests.py` / `test_*.py` naming convention (configured in `pyproject.toml`). Django settings are auto-loaded via `DJANGO_SETTINGS_MODULE = "demoProject.settings"` — no extra setup needed.
+Test files follow the `tests.py` / `test_*.py` naming convention (configured in `pytest.ini`). Django settings are auto-loaded via `DJANGO_SETTINGS_MODULE = "demoProject.settings"` — no extra setup needed.
 
 ### Playwright (browser / end-to-end)
 
