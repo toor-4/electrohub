@@ -9,6 +9,7 @@ class SessionCart:
         self.cart, _ = Cart.objects.get_or_create(session_key=self.session_key)
 
     def add(self, product, quantity=1, override_quantity=False):
+        quantity = max(int(quantity), 1)
         item, created = CartItem.objects.get_or_create(
             cart=self.cart,
             product=product,

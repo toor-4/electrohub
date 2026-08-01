@@ -98,7 +98,7 @@ def cart_view(request):
 def cart_add(request, product_id):
     product = get_object_or_404(Product, id=product_id, is_active=True)
     cart = SessionCart(request)
-    quantity = int(request.POST.get("quantity", 1))
+    quantity = max(int(request.POST.get("quantity", 1)), 1)
     override = request.POST.get("override") == "true"
     cart.add(product, quantity=quantity, override_quantity=override)
     messages.success(request, f"'{product.name}' added to cart.")
@@ -158,6 +158,11 @@ def checkout(request):
             order.total_price = cart.total
             order.save()
 
+            if not order.user:
+                guest_order_ids = request.session.setdefault("guest_order_ids", [])
+                guest_order_ids.append(order.id)
+                request.session.modified = True
+
             for item in cart.items:
                 OrderItem.objects.create(
                     order=order,
@@ -177,9 +182,15 @@ def checkout(request):
     return render(request, "store/checkout.html", {"form": form, "cart": cart})
 
 
+def _can_view_order(request, order):
+    if order.user:
+        return order.user == request.user
+    return order.id in request.session.get("guest_order_ids", [])
+
+
 def order_confirm(request, order_id):
     order = get_object_or_404(Order, id=order_id)
-    if order.user and order.user != request.user:
+    if not _can_view_order(request, order):
         raise Http404
     return render(request, "store/order_confirm.html", {"order": order})
 
@@ -199,4 +210,6 @@ def register(request):
 
 def stripe_payment_demo(request, order_id):
     order = get_object_or_404(Order, id=order_id)
+    if not _can_view_order(request, order):
+        raise Http404
     return render(request, "store/stripe_payment.html", {"order": order})
