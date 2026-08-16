@@ -31,6 +31,18 @@ python manage.py runserver
 
 Open http://127.0.0.1:8000/ in your browser.
 
+## Screenshots
+
+![Home page](screenshots/readme/home.png)
+
+| Product Detail | Cart |
+|---|---|
+| ![Product detail page](screenshots/readme/product-detail.png) | ![Cart page](screenshots/readme/cart.png) |
+
+| Checkout / Payment |
+|---|
+| ![Payment page](screenshots/readme/stripe-payment.png) |
+
 ## Features
 
 - **Product catalog** — categories, brands, stock tracking, featured products
